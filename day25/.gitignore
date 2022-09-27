@@ -1,0 +1,7 @@
+# created by virtualenv automatically
+*
+!main.py
+!blank_states_img.gif
+!50_states.csv
+!csv_stuff.py
+!.gitignore
