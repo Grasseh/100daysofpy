@@ -1,15 +1,79 @@
 import tkinter
+import random
+import pyperclip
+from tkinter import messagebox
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
-    return 'a'
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+
+    letter_len = random.randint(8, 10)
+    number_len = random.randint(2, 4)
+    symbol_len = random.randint(2, 4)
+
+    password = ""
+    character_list = []
+    character_list += [random.choice(letters) for _ in range(letter_len)]
+    character_list += [random.choice(numbers) for _ in range(number_len)]
+    character_list += [random.choice(symbols) for _ in range(symbol_len)]
+
+    random.shuffle(character_list)
+
+    for character_to_pick in character_list:
+        list_len = len(character_to_pick)
+        password += character_to_pick[random.randint(0, list_len - 1)]
+
+    pyperclip.copy(password)
+    password_entry.delete(0, tkinter.END)
+    password_entry.insert(0, password)
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save_password():
+    email = email_entry.get()
+    password = password_entry.get()
+    website = website_entry.get()
+
+    if email == '':
+        messagebox.showinfo(
+            title="Oops",
+            message="You left the email empty!"
+        )
+
+        return
+
+    if password == '':
+        messagebox.showinfo(
+            title="Oops",
+            message="You left the password empty!"
+        )
+
+        return
+
+    if website == '':
+        messagebox.showinfo(
+            title="Oops",
+            message="You left the website empty!"
+        )
+
+        return
+
+    if not messagebox.askokcancel(
+        title=website_entry.get(),
+        message=f"These are the details you entered:\n"
+                f"Email: {email}\n"
+                f"Password: {password}\n"
+                f"Are these okay to save?"
+    ):
+        return
+
     with open('data.txt', mode="a") as file:
-        file.write(f"{website_entry.get()} | {email_entry.get()} | {password_entry.get()}\n")
-    website_entry.delete(0, tkinter.END)
-    password_entry.delete(0, tkinter.END)
+        file.write(
+            f"{website} | {email} | {password}\n"
+        )
+        website_entry.delete(0, tkinter.END)
+        password_entry.delete(0, tkinter.END)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = tkinter.Tk()
@@ -40,8 +104,5 @@ generate_password = tkinter.Button(text='Generate Password', command=generate_pa
 generate_password.grid(row=3, column=2)
 add_button = tkinter.Button(text='Add', command=save_password, width=41)
 add_button.grid(row=4, column=1, columnspan=2)
-
-
-
 
 window.mainloop()
