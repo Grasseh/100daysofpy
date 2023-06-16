@@ -71,8 +71,14 @@ def save_password():
 
     data = {}
 
-    with open('data.json', mode="r") as file:
-        data = json.load(file)
+    # This is for academic purposes since it should just check if
+    # the file exists instead
+    try:
+        with open('data.json', mode="r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        with open('data.json', mode="w") as file:
+            json.dump(data, file, indent=4)
 
     data[website] = {
         'email': email,
@@ -83,6 +89,31 @@ def save_password():
         json.dump(data, file, indent=4)
         website_entry.delete(0, tkinter.END)
         password_entry.delete(0, tkinter.END)
+
+def search():
+    data = {}
+
+    try:
+        with open('data.json', mode="r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+
+    result = ""
+
+    website = website_entry.get()
+
+    try:
+        email = data[website]['email']
+        password = data[website]['password']
+        result=f"Website: {website}\nEmail: {email}\nPassword: {password}\n"
+    except KeyError:
+        result=f"No entry found"
+
+    messagebox.showinfo(
+        title="Information",
+        message=result
+    )
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = tkinter.Tk()
@@ -101,14 +132,16 @@ username.grid(row=2, column=0)
 password = tkinter.Label(text='Password')
 password.grid(row=3, column=0)
 
-website_entry = tkinter.Entry(width=44)
-website_entry.grid(row=1, column=1, columnspan=2)
+website_entry = tkinter.Entry(width=24)
+website_entry.grid(row=1, column=1)
 email_entry = tkinter.Entry(width=44)
 email_entry.grid(row=2, column=1, columnspan=2)
 email_entry.insert(0, 'steve.gagne@nasdaq.com')
 password_entry = tkinter.Entry(width=24)
 password_entry.grid(row=3, column=1)
 
+search_button = tkinter.Button(text='Search', command=search)
+search_button.grid(row=1, column=2)
 generate_password = tkinter.Button(text='Generate Password', command=generate_password)
 generate_password.grid(row=3, column=2)
 add_button = tkinter.Button(text='Add', command=save_password, width=41)
